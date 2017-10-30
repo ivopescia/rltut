@@ -1,6 +1,7 @@
 package rltut;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import rltut.Creature;
 
@@ -18,6 +19,7 @@ public class World {
 		this.tiles = tiles;
 		this.width = tiles.length;
 		this.height = tiles[0].length;
+		this.creatures = new ArrayList<Creature>();
 	}
 	
 	public Tile tile(int x, int y) {
@@ -52,6 +54,7 @@ public class World {
 
 	    creature.x = x;
 	    creature.y = y;
+	    creatures.add(creature);
 	}
 	
 	public Creature creature(int x, int y) {
@@ -60,5 +63,16 @@ public class World {
 				return c;
 		}
 		return null;
+	}
+	
+	public void remove(Creature other) {
+		creatures.remove(other);
+	}
+	
+	public void update() {
+	    List<Creature> toUpdate = new ArrayList<Creature>(creatures);
+	    for (Creature creature : toUpdate){
+	        creature.update();
+	    }
 	}
 }
