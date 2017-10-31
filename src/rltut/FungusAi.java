@@ -12,6 +12,7 @@ public class FungusAi extends CreatureAi {
 	public void onUpdate() {
 		if (spreadcount < 5 && Math.random() < 0.02)
 			spread();
+			creature.doAction("spawn a child", null);
 	}
 	
 	private void spread() {
