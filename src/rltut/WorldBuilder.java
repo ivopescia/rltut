@@ -12,12 +12,13 @@ public class WorldBuilder {
 	private int[][][] regions;
 	private int nextRegion;
 	
-	public WorldBuilder(int width, int height) {
+	public WorldBuilder(int width, int height, int depth) {
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
 		this.tiles = new Tile[width][height][depth];
 		this.regions = new int[width][height][depth];
+		this.nextRegion = 1;
 	}
 	
 	public World build() {

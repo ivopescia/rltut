@@ -7,7 +7,6 @@ import java.awt.event.KeyListener;
 import rltut.screens.Screen;
 import rltut.screens.StartScreen;
 
-
 public class ApplicationMain extends JFrame implements KeyListener {
 
 	private static final long serialVersionUID = 1060623638149583738L;

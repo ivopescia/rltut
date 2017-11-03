@@ -22,6 +22,7 @@ public class World {
 		this.tiles = tiles;
 		this.width = tiles.length;
 		this.height = tiles[0].length;
+		this.depth = tiles[0][0].length;
 		this.creatures = new ArrayList<Creature>();
 	}
 	
