@@ -18,7 +18,7 @@ public class CreatureFactory {
 	    return player;
 	}
 	
-	public Creature newFungus() {
+	public Creature newFungus(int depth) {
 		Creature fungus = new Creature(world, 'f', AsciiPanel.green, 10, 0, 0);
 		world.addAtEmptyLocation(fungus, 0);
 		new FungusAi(fungus, this);

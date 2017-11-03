@@ -65,7 +65,7 @@ public class Creature {
             }
         }
 		
-		Creature other = world.creature(x+mx,  y+my);
+		Creature other = world.creature(x+mx,  y+my, z+mz);
         if (other == null)
             ai.onEnter(x+mx, y+my, z+mz, tile);
         else
@@ -109,7 +109,7 @@ public class Creature {
 				if (ox*ox + oy*oy > r*r)
 					continue;
 				
-				Creature other = world.creature(x+ox, y+oy);
+				Creature other = world.creature(x+ox, y+oy, z);
 				
 				if (other == null)
 					continue;

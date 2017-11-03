@@ -137,8 +137,8 @@ public class WorldBuilder {
 			for (int y = 0; y < height; y++) {
 				String region = regions[x][y][z] + "," + regions[x][y][z+1];
 				if (tiles[x][y][z] == Tile.FLOOR && tiles[x][y][z+1] == Tile.FLOOR && !connected.contains(region)) {
-					connected.add(regions);
-					connectedRegionsDown(z, regions[x][y][z], regions[x][y][z+1]);
+					connected.add(region);
+					connectRegionsDown(z, regions[x][y][z], regions[x][y][z+1]);
 				}
 			}
 		}
@@ -166,7 +166,6 @@ public class WorldBuilder {
 					candidates.add(new Point(x,y,z));
 				}
 			}
-			
 		}
 		Collections.shuffle(candidates);
 		return candidates;

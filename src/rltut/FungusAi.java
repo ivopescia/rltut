@@ -19,10 +19,10 @@ public class FungusAi extends CreatureAi {
 		int x = creature.x + (int)(Math.random() * 11) -5;
 		int y = creature.y + (int)(Math.random() * 11) -5;
 		
-		if (!creature.canEnter(x, y))
+		if (!creature.canEnter(x, y, creature.z))
 			return;
 		
-		Creature child = factory.newFungus();
+		Creature child = factory.newFungus(creature.z);
 		child.x = x;
 		child.y = y;
 		spreadcount++;
