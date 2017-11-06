@@ -28,6 +28,8 @@ public class Creature {
 	public int defenseValue;
 	public int defenseValue() { return defenseValue; }
 	
+	private int visionRadius;
+	public int visionRadius() { return visionRadius; }	
 	
 	public Creature (World world, char glyph, Color color, int maxHp, int attack, int defense) {
 		this.world = world;
@@ -133,5 +135,13 @@ public class Creature {
 	    }
 	    
 	    return builder.toString().trim();
+	}
+	
+	public boolean canSee(int wx, int wy, int wz) {
+		return ai.canSee(wx, wy, wz);
+	}
+	
+	public Tile tile(int wx, int wy, int wz) {
+		return world.tile(wx,  wy,  wz);
 	}
 }

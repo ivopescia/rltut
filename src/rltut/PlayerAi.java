@@ -5,6 +5,7 @@ import java.util.List;
 public class PlayerAi extends CreatureAi {
 	
 	private List<String> messages;
+	public FieldOfView fov;
 	
 	public PlayerAi(Creature creature, List<String> messages) {
 		super(creature);
@@ -22,6 +23,10 @@ public class PlayerAi extends CreatureAi {
 	
 	public void onNotify(String message) {
 		messages.add(message);
+	}
+	
+	public boolean canSee(int wx, int wy, int wz) {
+		return fov.isVisible(wz, wy, wz);
 	}
 	
 }
