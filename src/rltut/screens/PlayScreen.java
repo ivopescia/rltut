@@ -8,9 +8,9 @@ import java.util.List;
 import asciiPanel.AsciiPanel;
 import rltut.Creature;
 import rltut.CreatureFactory;
+import rltut.FieldOfView;
 import rltut.World;
 import rltut.WorldBuilder;
-import rltut.FieldOfView;
 
 public class PlayScreen implements Screen {
 	private World world;
@@ -20,7 +20,7 @@ public class PlayScreen implements Screen {
 	private List<String> messages;
 	private FieldOfView fov;
 	
-	public PlayScreen() {
+	public PlayScreen(){
 		screenWidth = 80;
 		screenHeight = 23;
 		messages = new ArrayList<String>();

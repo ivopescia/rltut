@@ -39,6 +39,7 @@ public class Creature {
 		this.hp = maxHp;
 		this.attackValue = attack;
 		this.defenseValue = defense;
+		this.visionRadius = 9;
 	}
 	
 	private CreatureAi ai;
@@ -46,6 +47,7 @@ public class Creature {
 	
 	public void dig(int wx, int wy, int wz) {
 	    world.dig(wx, wy, wz);
+	    doAction("dig");
 	}
 	
 	public void moveBy(int mx, int my, int mz){
@@ -55,14 +57,14 @@ public class Creature {
             if (tile == Tile.STAIRS_DOWN) {
                 doAction("walk up the stairs to level %d", z+mz+1);
             } else {
-                doAction("try to go up but are stopped by the cave ceiling", null);
+                doAction("try to go up but are stopped by the cave ceiling");
                 return;
             }
         } else if (mz == 1){
             if (tile == Tile.STAIRS_UP) {
                 doAction("walk down the stairs to level %d", z+mz+1);
             } else {
-                doAction("try to go down but are stopped by the cave floor", null);
+                doAction("try to go down but are stopped by the cave floor");
                 return;
             }
         }
@@ -80,14 +82,14 @@ public class Creature {
 		amount = (int)(Math.random() * amount) + 1;
 		
 		other.modifyHp(-amount);
-		doAction(String.format("attack the '%s' for %d damage", other.glyph, amount), null);
+		doAction(String.format("attack the '%s' for %d damage", other.glyph, amount));
 	}
 	
 	public void modifyHp(int amount) {
 		hp += amount;
 		
 		if (hp < 1) {
-			doAction("Die", null);
+			doAction("die");
 			world.remove(this);
 		}
 	}

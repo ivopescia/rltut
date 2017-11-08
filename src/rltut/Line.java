@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Line implements Iterable<Point>{
+public class Line implements Iterable<Point> {
 	private List<Point> points;
 	public List<Point> getPoints() { return points; }
 	
@@ -18,10 +18,10 @@ public class Line implements Iterable<Point>{
 		int sy = y0 < y1 ? 1 : -1;
 		int err = dx-dy;
 		
-		while (true) {
+		while (true){
 			points.add(new Point(x0, y0, 0));
 			
-			if (x0==x1 && y0 == y1)
+			if (x0==x1 && y0==y1)
 				break;
 			
 			int e2 = err * 2;
@@ -29,7 +29,7 @@ public class Line implements Iterable<Point>{
 				err -= dy;
 				x0 += sx;
 			}
-			if (e2 < dx) {
+			if (e2 < dx){
 				err += dx;
 				y0 += sy;
 			}
