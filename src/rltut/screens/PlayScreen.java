@@ -32,11 +32,17 @@ public class PlayScreen implements Screen {
 	}
 	
 	private void createCreatures(CreatureFactory creatureFactory){
+		// create Player
 		player = creatureFactory.newPlayer(messages, fov);
 		
 		for (int z = 0; z < world.depth(); z++){
+			// create 8 Fungus
 			for (int i = 0; i < 8; i++){
 				creatureFactory.newFungus(z);
+			}
+			// create 20 Bats
+			for (int y = 0; y < 20; y++) {
+				creatureFactory.newBat(z);
 			}
 		}
 	}
@@ -114,6 +120,10 @@ public class PlayScreen implements Screen {
 		}
 		
 		world.update();
+		
+		if (player.hp() < 1) {
+			return new LoseScreen();
+		}
 		
 		return this;
 	}

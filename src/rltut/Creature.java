@@ -1,7 +1,6 @@
 package rltut;
 
 import java.awt.Color;
-import java.text.Format;
 
 public class Creature {
 	private World world;
@@ -22,6 +21,9 @@ public class Creature {
 	private int hp;
 	public int hp() { return hp; }
 	
+	private String name;
+	public String name() { return name; }
+	
 	private int attackValue;
 	public int attackValue() { return attackValue; }
 	
@@ -31,10 +33,11 @@ public class Creature {
 	private int visionRadius;
 	public int visionRadius() { return visionRadius; }	
 	
-	public Creature (World world, char glyph, Color color, int maxHp, int attack, int defense) {
+	public Creature (World world, char glyph, Color color, String name, int maxHp, int attack, int defense) {
 		this.world = world;
 		this.glyph = glyph;
 		this.color = color;
+		this.name = name;
 		this.maxHp = maxHp;
 		this.hp = maxHp;
 		this.attackValue = attack;
@@ -51,8 +54,11 @@ public class Creature {
 	}
 	
 	public void moveBy(int mx, int my, int mz){
-        Tile tile = world.tile(x+mx, y+my, z+mz);
+		Tile tile = world.tile(x+mx, y+my, z+mz);
         
+		if (mx==0 && my==0 && mz==0)
+			return;
+		
         if (mz == -1){
             if (tile == Tile.STAIRS_DOWN) {
                 doAction("walk up the stairs to level %d", z+mz+1);
@@ -70,6 +76,7 @@ public class Creature {
         }
 		
 		Creature other = world.creature(x+mx,  y+my, z+mz);
+		
         if (other == null)
             ai.onEnter(x+mx, y+my, z+mz, tile);
         else
@@ -82,7 +89,8 @@ public class Creature {
 		amount = (int)(Math.random() * amount) + 1;
 		
 		other.modifyHp(-amount);
-		doAction(String.format("attack the '%s' for %d damage", other.glyph, amount));
+		
+		doAction(String.format("attack the '%s' for %d damage", other.name, amount));
 	}
 	
 	public void modifyHp(int amount) {
@@ -102,7 +110,7 @@ public class Creature {
 		return world.tile(wx, wy, wz).isGround() && world.creature(wx, wy, wz) == null;
 	}
 	
-	public void notify(String message, Object params) {
+	public void notify(String message, Object ... params ) {
 		ai.onNotify(String.format(message,  params));
 	}
 	
@@ -145,5 +153,9 @@ public class Creature {
 	
 	public Tile tile(int wx, int wy, int wz) {
 		return world.tile(wx,  wy,  wz);
+	}
+	
+	public Creature creature(int wx, int wy, int wz) {
+		return world.creature(wx, wy, wz);
 	}
 }
