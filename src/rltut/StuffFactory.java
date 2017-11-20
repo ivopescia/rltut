@@ -37,4 +37,10 @@ public class StuffFactory {
 		world.addAtEmptyLocation(rock, depth);
 		return rock;
 	}
+	
+	public Item newVictoryItem(int depth) {
+		Item victoryItem = new Item('*', AsciiPanel.brightWhite, "teddy bear");
+		world.addAtEmptyLocation(victoryItem, depth);
+		return victoryItem;
+	}
 }

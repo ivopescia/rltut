@@ -3,12 +3,15 @@ package rltut.screens;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import asciiPanel.AsciiPanel;
 import rltut.Creature;
 import rltut.StuffFactory;
+import rltut.Tile;
 import rltut.FieldOfView;
+import rltut.Item;
 import rltut.World;
 import rltut.WorldBuilder;
 
@@ -19,6 +22,7 @@ public class PlayScreen implements Screen {
 	private int screenHeight;
 	private List<String> messages;
 	private FieldOfView fov;
+	private Screen subscreen;
 	
 	public PlayScreen(){
 		screenWidth = 80;
@@ -54,6 +58,7 @@ public class PlayScreen implements Screen {
 				factory.newRock(z);
 			}
 		}
+		factory.newVictoryItem(world.depth() - 1);
 	}
 	
 	private void createWorld(){
@@ -78,6 +83,9 @@ public class PlayScreen implements Screen {
 
 		String stats = String.format(" %3d/%3d hp", player.hp(), player.maxHp());
 		terminal.write(stats, 1, 23);
+		
+		if (subscreen != null)
+		    subscreen.displayOutput(terminal);
 	}
 
 	private void displayMessages(AsciiPanel terminal, List<String> messages) {
@@ -104,33 +112,53 @@ public class PlayScreen implements Screen {
 		}
 	}
 	
+	private boolean userIsTryingToExit() {
+		return player.z == 0 && world.tile(player.x, player.y, player.z) == Tile.STAIRS_UP;
+	}
+	
+	private Screen userExits() {
+		for (Item item : player.inventory().getItems()) {
+			if (item!=null && item.name().equals("teddy bear"))
+				return new WinScreen();
+		}
+		return new LoseScreen();
+	}
+	
 	@Override
 	public Screen respondToUserInput(KeyEvent key) {
-		switch (key.getKeyCode()){
-		case KeyEvent.VK_ESCAPE: return new LoseScreen();
-		case KeyEvent.VK_ENTER: return new WinScreen();
-		case KeyEvent.VK_LEFT:
-		case KeyEvent.VK_H: player.moveBy(-1, 0, 0); break;
-		case KeyEvent.VK_RIGHT:
-		case KeyEvent.VK_L: player.moveBy( 1, 0, 0); break;
-		case KeyEvent.VK_UP:
-		case KeyEvent.VK_K: player.moveBy( 0,-1, 0); break;
-		case KeyEvent.VK_DOWN:
-		case KeyEvent.VK_J: player.moveBy( 0, 1, 0); break;
-		case KeyEvent.VK_Y: player.moveBy(-1,-1, 0); break;
-		case KeyEvent.VK_U: player.moveBy( 1,-1, 0); break;
-		case KeyEvent.VK_B: player.moveBy(-1, 1, 0); break;
-		case KeyEvent.VK_N: player.moveBy( 1, 1, 0); break;
+		if (subscreen!=null) {
+			subscreen = subscreen.respondToUserInput(key);
+		} else {
+		switch (key.getKeyCode()) {
+			case KeyEvent.VK_LEFT:
+			case KeyEvent.VK_H: player.moveBy(-1, 0, 0); break;
+			case KeyEvent.VK_RIGHT:
+			case KeyEvent.VK_L: player.moveBy( 1, 0, 0); break;
+			case KeyEvent.VK_UP:
+			case KeyEvent.VK_K: player.moveBy( 0,-1, 0); break;
+			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_J: player.moveBy( 0, 1, 0); break;
+			case KeyEvent.VK_Y: player.moveBy(-1,-1, 0); break;
+			case KeyEvent.VK_U: player.moveBy( 1,-1, 0); break;
+			case KeyEvent.VK_B: player.moveBy(-1, 1, 0); break;
+			case KeyEvent.VK_N: player.moveBy( 1, 1, 0); break;
+			}
 		}
 		
 		switch (key.getKeyChar()){
 			case 'g':
 			case ',': player.pickup(); break;
-			case '<': player.moveBy( 0, 0, -1); break;
+			case '<': 
+				if (userIsTryingToExit())
+						return userExits();
+				else
+					player.moveBy( 0, 0, -1);
+				break;
 			case '>': player.moveBy( 0, 0, 1); break;
 		}
-		
-		world.update();
+			
+		if (subscreen == null)
+			world.update();
 		
 		if (player.hp() < 1) {
 			return new LoseScreen();
