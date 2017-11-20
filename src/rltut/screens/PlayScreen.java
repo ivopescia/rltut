@@ -7,7 +7,7 @@ import java.util.List;
 
 import asciiPanel.AsciiPanel;
 import rltut.Creature;
-import rltut.CreatureFactory;
+import rltut.StuffFactory;
 import rltut.FieldOfView;
 import rltut.World;
 import rltut.WorldBuilder;
@@ -27,22 +27,31 @@ public class PlayScreen implements Screen {
 		createWorld();
 		fov = new FieldOfView(world);
 		
-		CreatureFactory creatureFactory = new CreatureFactory(world);
-		createCreatures(creatureFactory);
+		StuffFactory factory = new StuffFactory(world);
+		createCreatures(factory);
+		createItems(factory);
 	}
 	
-	private void createCreatures(CreatureFactory creatureFactory){
+	private void createCreatures(StuffFactory factory){
 		// create Player
-		player = creatureFactory.newPlayer(messages, fov);
+		player = factory.newPlayer(messages, fov);
 		
 		for (int z = 0; z < world.depth(); z++){
 			// create 8 Fungus
 			for (int i = 0; i < 8; i++){
-				creatureFactory.newFungus(z);
+				factory.newFungus(z);
 			}
 			// create 20 Bats
 			for (int y = 0; y < 20; y++) {
-				creatureFactory.newBat(z);
+				factory.newBat(z);
+			}
+		}
+	}
+	
+	private void createItems(StuffFactory factory) {
+		for (int z = 0; z < world.depth(); z++) {
+			for (int i = 0; i < world.width() * world.height() / 20; i++) {
+				factory.newRock(z);
 			}
 		}
 	}
@@ -115,8 +124,10 @@ public class PlayScreen implements Screen {
 		}
 		
 		switch (key.getKeyChar()){
-		case '<': player.moveBy( 0, 0, -1); break;
-		case '>': player.moveBy( 0, 0, 1); break;
+			case 'g':
+			case ',': player.pickup(); break;
+			case '<': player.moveBy( 0, 0, -1); break;
+			case '>': player.moveBy( 0, 0, 1); break;
 		}
 		
 		world.update();
