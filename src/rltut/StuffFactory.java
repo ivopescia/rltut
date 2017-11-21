@@ -43,4 +43,19 @@ public class StuffFactory {
 		world.addAtEmptyLocation(victoryItem, depth);
 		return victoryItem;
 	}
+	
+	public Item newApple(int depth) {
+		Item apple = new Item('%', AsciiPanel.brightRed, "apple");
+		apple.modifyFoodValue(100);
+		world.addAtEmptyLocation(apple, depth);
+		return apple;
+	}
+	
+	public Item newBread(int depth) {
+		Item bread = new Item('%', AsciiPanel.yellow, "bread");
+		bread.modifyFoodValue(200);
+		world.addAtEmptyLocation(bread, depth);
+		return bread;
+	}
+
 }

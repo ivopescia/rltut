@@ -36,6 +36,12 @@ public class Creature {
 	private Inventory inventory;
 	public Inventory inventory() { return inventory; }
 	
+	private int maxFood;
+	public int maxFood() { return maxFood; }
+	
+	private int food;
+	public int food() { return food; }
+	
 	
 	public Creature (World world, char glyph, Color color, String name, int maxHp, int attack, int defense) {
 		this.world = world;
@@ -48,12 +54,15 @@ public class Creature {
 		this.defenseValue = defense;
 		this.visionRadius = 9;
 		this.inventory = new Inventory(20);
+		this.maxFood = 1000;
+		this.food = maxFood / 3 * 2;
 	}
 	
 	private CreatureAi ai;
 	public void setCreatureAi(CreatureAi ai) { this.ai = ai; }
 	
 	public void dig(int wx, int wy, int wz) {
+		modifyFood(-10);
 	    world.dig(wx, wy, wz);
 	    doAction("dig");
 	}
@@ -103,11 +112,19 @@ public class Creature {
 		
 		if (hp < 1) {
 			doAction("die");
+			leaveCorpse();
 			world.remove(this);
 		}
 	}
 
+	private void leaveCorpse() {
+		Item corpse = new Item('%', color, name + " corpse");
+		corpse.modifyFoodValue(maxHp * 3);
+		world.addAtEmptyLocation(corpse,  x, y, z);
+	}
+	
 	public void update() {
+		modifyFood(-1);
 		ai.onUpdate();
 	}
 	
@@ -183,5 +200,27 @@ public class Creature {
 	    } else {
 	         notify("There's nowhere to drop the %s.", item.name());
 	    }
+	}
+	
+	public void modifyFood(int amount) {
+		food += amount;
+		
+		if (food > maxFood) {
+			maxFood = maxFood + food / 2;
+			food = maxFood;
+			notify("You can't believe your stomach can hold that much !");
+			modifyHp(-1);			
+		} else if (food < 1 && isPlayer()) {
+			modifyHp(-1000);
+		}
+	}
+	
+	public boolean isPlayer() {
+		return glyph == '@';
+	}
+	
+	public void eat(Item item) {
+		modifyFood(item.foodValue());
+		inventory.remove(item);
 	}
 }

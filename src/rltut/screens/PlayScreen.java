@@ -57,6 +57,12 @@ public class PlayScreen implements Screen {
 			for (int i = 0; i < world.width() * world.height() / 20; i++) {
 				factory.newRock(z);
 			}
+			// create 2 apples
+			for (int y = 0; y < 2; y++) {
+				factory.newApple(z);
+			}
+			// create 1 bread
+			factory.newBread(z);
 		}
 		factory.newVictoryItem(world.depth() - 1);
 	}
@@ -78,16 +84,27 @@ public class PlayScreen implements Screen {
 		
 		displayTiles(terminal, left, top);
 		displayMessages(terminal, messages);
-		
-		terminal.writeCenter("-- press [escape] to lose or [enter] to win --", 23);
-
-		String stats = String.format(" %3d/%3d hp", player.hp(), player.maxHp());
+	
+		String stats = String.format(" %3d/%3d hp %8s", player.hp(), player.maxHp(), hunger());
 		terminal.write(stats, 1, 23);
 		
 		if (subscreen != null)
 		    subscreen.displayOutput(terminal);
 	}
 
+	private String hunger(){
+	    if (player.food() < player.maxFood() * 0.1)
+	        return "Starving";
+	    else if (player.food() < player.maxFood() * 0.2)
+	        return "Hungry";
+	    else if (player.food() > player.maxFood() * 0.9)
+	        return "Stuffed";
+	    else if (player.food() > player.maxFood() * 0.8)
+	        return "Full";
+	    else
+	        return "";
+	}
+	
 	private void displayMessages(AsciiPanel terminal, List<String> messages) {
 		int top = screenHeight - messages.size();
 		for (int i = 0; i < messages.size(); i++){
@@ -112,13 +129,13 @@ public class PlayScreen implements Screen {
 		}
 	}
 	
-	private boolean userIsTryingToExit() {
+	private boolean userIsTryingToExit(){
 		return player.z == 0 && world.tile(player.x, player.y, player.z) == Tile.STAIRS_UP;
 	}
 	
-	private Screen userExits() {
-		for (Item item : player.inventory().getItems()) {
-			if (item!=null && item.name().equals("teddy bear"))
+	private Screen userExits(){
+		for (Item item : player.inventory().getItems()){
+			if (item != null && item.name().equals("teddy bear"))
 				return new WinScreen();
 		}
 		return new LoseScreen();
@@ -126,10 +143,10 @@ public class PlayScreen implements Screen {
 	
 	@Override
 	public Screen respondToUserInput(KeyEvent key) {
-		if (subscreen!=null) {
+		if (subscreen != null) {
 			subscreen = subscreen.respondToUserInput(key);
 		} else {
-		switch (key.getKeyCode()) {
+			switch (key.getKeyCode()){
 			case KeyEvent.VK_LEFT:
 			case KeyEvent.VK_H: player.moveBy(-1, 0, 0); break;
 			case KeyEvent.VK_RIGHT:
@@ -142,19 +159,20 @@ public class PlayScreen implements Screen {
 			case KeyEvent.VK_U: player.moveBy( 1,-1, 0); break;
 			case KeyEvent.VK_B: player.moveBy(-1, 1, 0); break;
 			case KeyEvent.VK_N: player.moveBy( 1, 1, 0); break;
+			case KeyEvent.VK_D: subscreen = new DropScreen(player); break;
+			case KeyEvent.VK_E: subscreen = new EatScreen(player); break;
 			}
-		}
-		
-		switch (key.getKeyChar()){
+			
+			switch (key.getKeyChar()){
 			case 'g':
 			case ',': player.pickup(); break;
 			case '<': 
 				if (userIsTryingToExit())
-						return userExits();
+					return userExits();
 				else
-					player.moveBy( 0, 0, -1);
-				break;
+					player.moveBy( 0, 0, -1); break;
 			case '>': player.moveBy( 0, 0, 1); break;
+			}
 		}
 			
 		if (subscreen == null)
@@ -163,7 +181,7 @@ public class PlayScreen implements Screen {
 		if (player.hp() < 1) {
 			return new LoseScreen();
 		}
-		
+			
 		return this;
 	}
 }

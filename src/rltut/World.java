@@ -95,6 +95,12 @@ public class World {
 		items[x][y][depth] = item;
 	}
 	
+	public void addAtEmptyLocation(Item item, int x, int y, int z) {
+		while (!tile(x,y,z).isGround() || item(x,y,z) != null);
+		
+		items[x][y][z] = item;
+	}
+	
 	public Creature creature(int x, int y, int z) {
 		for (Creature c : creatures) {
 			if (c.x == x && c.y == y && c.z == z) 
