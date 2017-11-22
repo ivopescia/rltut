@@ -28,15 +28,19 @@ public class World {
 		this.items = new Item[width][height][depth];
 	}
 	
+	public Creature creature(int x, int y, int z) {
+		for (Creature c : creatures) {
+			if (c.x == x && c.y == y && c.z == z) 
+				return c;
+		}
+		return null;
+	}
+	
 	public Tile tile(int x, int y, int z) {
-		if (x<0 || x >= width || y < 0 || y >= height || z < 0 || z >= depth)
+		if (x < 0 || x >= width || y < 0 || y >= height || z < 0 || z >= depth)
 			return Tile.BOUNDS;
 		else
 			return tiles[x][y][z];
-	}
-	
-	public Item item(int x, int y, int z) {
-		return items[x][y][z];
 	}
 	
 	public char glyph(int x, int y, int z){
@@ -59,6 +63,10 @@ public class World {
 	    	return item(x,y,z).color();
 	    
 	    return tile(x,y,z).color();
+	}
+	
+	public Item item(int x, int y, int z) {
+		return items[x][y][z];
 	}
 	
 	public void dig(int x, int y, int z) {
@@ -101,14 +109,6 @@ public class World {
 		items[x][y][z] = item;
 	}
 	
-	public Creature creature(int x, int y, int z) {
-		for (Creature c : creatures) {
-			if (c.x == x && c.y == y && c.z == z) 
-				return c;
-		}
-		return null;
-	}
-	
 	public void remove(Creature other) {
 		creatures.remove(other);
 	}
@@ -126,7 +126,7 @@ public class World {
 	
 	public boolean addAtEmptySpace(Item item, int x, int y, int z) {
 		if (item == null)
-			return false;
+			return true;
 		
 		List<Point> points = new ArrayList<Point>();
 		List<Point> checked = new ArrayList<Point>();

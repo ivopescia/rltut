@@ -15,6 +15,9 @@ public class Creature {
 	private Color color;
 	public Color color() { return color; }
 	
+	private CreatureAi ai;
+	public void setCreatureAi(CreatureAi ai) { this.ai = ai; }
+	
 	private int maxHp;
 	public int maxHp() { return maxHp; }
 	
@@ -72,9 +75,6 @@ public class Creature {
 		this.food = maxFood / 3 * 2;
 	}
 	
-	private CreatureAi ai;
-	public void setCreatureAi(CreatureAi ai) { this.ai = ai; }
-	
 	public void dig(int wx, int wy, int wz) {
 		modifyFood(-10);
 	    world.dig(wx, wy, wz);
@@ -105,6 +105,8 @@ public class Creature {
 		
 		Creature other = world.creature(x+mx,  y+my, z+mz);
 		
+		modifyFood(-1);
+		
         if (other == null)
             ai.onEnter(x+mx, y+my, z+mz, tile);
         else
@@ -112,19 +114,21 @@ public class Creature {
 	}
 	
 	public void attack(Creature other) {
+		modifyFood(-2);
 		int amount = Math.max(0,  attackValue() - other.defenseValue());
 		
 		amount = (int)(Math.random() * amount) + 1;
+
+		doAction(String.format("attack the %s for %d damage", other.name, amount));
 		
 		other.modifyHp(-amount);
-		
-		doAction(String.format("attack the '%s' for %d damage", other.name, amount));
 	}
 	
 	public void modifyHp(int amount) {
 		hp += amount;
-		
-		if (hp < 1) {
+		if (hp > maxHp) {
+			hp = maxHp;
+		} else if (hp < 1) {
 			doAction("die");
 			leaveCorpse();
 			world.remove(this);
@@ -133,8 +137,8 @@ public class Creature {
 
 	private void leaveCorpse() {
 		Item corpse = new Item('%', color, name + " corpse");
-		corpse.modifyFoodValue(maxHp * 3);
-		world.addAtEmptyLocation(corpse,  x, y, z);
+		corpse.modifyFoodValue(maxHp);
+		world.addAtEmptySpace(corpse,  x, y, z);
 	}
 	
 	public void update() {

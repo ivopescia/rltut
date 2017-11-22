@@ -49,6 +49,10 @@ public class PlayScreen implements Screen {
 			for (int y = 0; y < 20; y++) {
 				factory.newBat(z);
 			}
+			
+			for (int i = 0; i < z + 3; i++){
+		         factory.newZombie(z, player);
+		    }
 		}
 	}
 	
