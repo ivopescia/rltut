@@ -48,4 +48,8 @@ public class CreatureAi {
         }
         return true;
     }
+	
+	public void onGainLevel() {
+		new LevelUpController().autoLevelUp(creature);
+	}
 }

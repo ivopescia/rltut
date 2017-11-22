@@ -33,7 +33,7 @@ public class StuffFactory {
 	}
 	
 	public Creature newZombie(int depth, Creature player) {
-		Creature zombie = new Creature(world, 'z', AsciiPanel.white, "zombie", 50, 10, 10);
+		Creature zombie = new Creature(world, 'z', AsciiPanel.white, "zombie", 35, 7, 3);
 		world.addAtEmptyLocation(zombie, depth);
 		new ZombieAi(zombie, player);
 		return zombie;
@@ -107,7 +107,15 @@ public class StuffFactory {
 		world.addAtEmptyLocation(item, depth);
 		return item;
 	}
-		  
+	
+	public Item newEdibleWeapon(int depth){
+	    Item item = new Item(')', AsciiPanel.yellow, "baguette");
+	    item.modifyAttackValue(3);
+	    item.modifyFoodValue(50);
+	    world.addAtEmptyLocation(item, depth);
+	    return item;
+	 }
+	
 	public Item randomWeapon(int depth){
 		switch ((int)(Math.random() * 3)){
 		case 0: return newDagger(depth);
@@ -124,11 +132,5 @@ public class StuffFactory {
 		}
 	}
 	
-	public Item newEdibleWeapon(int depth){
-	    Item item = new Item(')', AsciiPanel.yellow, "baguette");
-	    item.modifyAttackValue(3);
-	    item.modifyFoodValue(50);
-	    world.addAtEmptyLocation(item, depth);
-	    return item;
-	 }
+
 }

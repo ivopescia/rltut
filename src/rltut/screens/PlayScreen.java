@@ -71,6 +71,9 @@ public class PlayScreen implements Screen {
 			factory.randomWeapon(z);
 			// create an armor
 			factory.randomArmor(z);
+			// create a baguette
+			factory.newEdibleWeapon(z);
+			
 		}
 		factory.newVictoryItem(world.depth() - 1);
 	}
@@ -93,7 +96,7 @@ public class PlayScreen implements Screen {
 		displayTiles(terminal, left, top);
 		displayMessages(terminal, messages);
 	
-		String stats = String.format(" %3d/%3d hp %8s", player.hp(), player.maxHp(), hunger());
+		String stats = String.format(" %3d/%3d hp %3s xp %8s ", player.hp(), player.maxHp(), player.xp(), hunger());
 		terminal.write(stats, 1, 23);
 		
 		if (subscreen != null)
@@ -151,6 +154,8 @@ public class PlayScreen implements Screen {
 	
 	@Override
 	public Screen respondToUserInput(KeyEvent key) {
+		int level = player.level();
+		
 		if (subscreen != null) {
 			subscreen = subscreen.respondToUserInput(key);
 		} else {
@@ -181,9 +186,12 @@ public class PlayScreen implements Screen {
 				else
 					player.moveBy( 0, 0, -1); break;
 			case '>': player.moveBy( 0, 0, 1); break;
+			case '?': subscreen = new HelpScreen(); break;
 			}
 		}
-			
+		if (player.level() > level) 
+			subscreen = new LevelUpScreen(player, player.level() - level);
+		
 		if (subscreen == null)
 			world.update();
 		
