@@ -116,10 +116,19 @@ public class StuffFactory {
 	    return item;
 	 }
 	
+	public Item newBow(int depth){
+        Item item = new Item(')', AsciiPanel.yellow, "bow");
+        item.modifyAttackValue(1);
+        item.modfiyRangedAttackValue(5);
+        world.addAtEmptyLocation(item, depth);
+        return item;
+    }
+	
 	public Item randomWeapon(int depth){
-		switch ((int)(Math.random() * 3)){
+		switch ((int)(Math.random() * 4)){
 		case 0: return newDagger(depth);
 		case 1: return newSword(depth);
+		case 2: return newBow(depth);
 		default: return newStaff(depth);
 		}
 	}

@@ -175,8 +175,22 @@ public class PlayScreen implements Screen {
 			case KeyEvent.VK_D: subscreen = new DropScreen(player); break;
 			case KeyEvent.VK_E: subscreen = new EatScreen(player); break;
 			case KeyEvent.VK_W: subscreen = new EquipScreen(player); break;
+			case KeyEvent.VK_X: subscreen = new ExamineScreen(player); break;
+			case KeyEvent.VK_SEMICOLON: subscreen = new LookScreen(player, "Looking",
+					player.x - getScrollX(),
+					player.y - getScrollY()); break;
+			case KeyEvent.VK_T: subscreen = new ThrowScreen(player,
+					player.x - getScrollX(),
+					player.y - getScrollY()); break;
+			case KeyEvent.VK_F:
+				if (player.weapon()== null || player.weapon().rangedAttackValue() == 0)
+					player.notify("You don't have a ranged weapon equipped.");
+				else
+					subscreen = new FireWeaponScreen(player,
+							player.x - getScrollX(),
+							player.y - getScrollY()); break;
 			}
-			
+					
 			switch (key.getKeyChar()){
 			case 'g':
 			case ',': player.pickup(); break;

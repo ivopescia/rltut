@@ -25,10 +25,19 @@ public class Item {
 	public int defenseValue() { return defenseValue; }
 	public void modifyDefenseValue(int amount) { defenseValue += amount; }
 	
+	private int thrownAttackValue;
+	public int thrownAttackValue() { return thrownAttackValue; }
+	public void modifyThrownAttackValue(int amount) { thrownAttackValue += amount; }
+	
+	private int rangedAttackValue;
+	public int rangedAttackValue() { return rangedAttackValue; }
+	public void modfiyRangedAttackValue(int amount) { rangedAttackValue += amount; }
+	
 	public Item(char glyph, Color color, String name) {
 		this.glyph = glyph;
 		this.color = color;
 		this.name = name;
+		this.thrownAttackValue = 1;
 	}
 	
 	public String details() {
