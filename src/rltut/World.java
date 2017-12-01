@@ -3,11 +3,9 @@ package rltut;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import rltut.Creature;
 
 public class World {
 	private Tile[][][] tiles;
-	private List<Creature> creatures;
 	private Item[][][] items;
 	
 	private int width;
@@ -18,6 +16,8 @@ public class World {
 	
 	private int depth;
 	public int depth() { return depth; }
+	
+	private List<Creature> creatures;
 	
 	public World(Tile[][][] tiles) {
 		this.tiles = tiles;
@@ -64,16 +64,12 @@ public class World {
 	    
 	    return tile(x,y,z).color();
 	}
-	
-	public Item item(int x, int y, int z) {
-		return items[x][y][z];
-	}
-	
+
 	public void dig(int x, int y, int z) {
 	    if (tile(x,y,z).isDiggable())
 	        tiles[x][y][z] = Tile.FLOOR;
 	}
-	
+
 	public void addAtEmptyLocation(Creature creature, int z){
 	    int x;
 	    int y;
@@ -90,6 +86,21 @@ public class World {
 	    creatures.add(creature);
 	}
 	
+	public void update() {
+	    List<Creature> toUpdate = new ArrayList<Creature>(creatures);
+	    for (Creature creature : toUpdate){
+	        creature.update();
+	    }
+	}
+	
+	public void remove(Creature other) {
+		creatures.remove(other);
+	}
+	
+		public Item item(int x, int y, int z) {
+		return items[x][y][z];
+	}
+	
 	public void addAtEmptyLocation(Item item, int depth) {
 		int x;
 		int y;
@@ -103,27 +114,23 @@ public class World {
 		items[x][y][depth] = item;
 	}
 	
-	public void addAtEmptyLocation(Item item, int x, int y, int z) {
-		while (!tile(x,y,z).isGround() || item(x,y,z) != null);
-		
-		items[x][y][z] = item;
-	}
-	
-	public void remove(Creature other) {
-		creatures.remove(other);
-	}
-	
-	public void update() {
-	    List<Creature> toUpdate = new ArrayList<Creature>(creatures);
-	    for (Creature creature : toUpdate){
-	        creature.update();
-	    }
-	}
-	
 	public void remove(int x, int y, int z) {
 		items[x][y][z] = null;
 	}
 	
+	public void remove(Item item) {
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
+                for (int z = 0; z < depth; z++){
+                	if (items[x][y][z] == item) {
+                		items[x][y][z] = null;
+                		return;
+                	}
+                }
+            }
+        }
+    }
+
 	public boolean addAtEmptySpace(Item item, int x, int y, int z) {
 		if (item == null)
 			return true;

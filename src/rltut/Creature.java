@@ -77,7 +77,7 @@ public class Creature {
 		this.hp = maxHp;
 		this.attackValue = attack;
 		this.defenseValue = defense;
-		this.visionRadius = 9;
+		this.visionRadius = 8;
 		this.inventory = new Inventory(20);
 		this.maxFood = 1000;
 		this.food = maxFood / 3 * 2;
@@ -151,6 +151,10 @@ public class Creature {
 		Item corpse = new Item('%', color, name + " corpse");
 		corpse.modifyFoodValue(maxHp);
 		world.addAtEmptySpace(corpse,  x, y, z);
+		for (Item item : inventory.getItems()) {
+			if (item != null)
+				drop(item);
+		}
 	}
 	
 	public void update() {
@@ -280,7 +284,17 @@ public class Creature {
 	}
 	
 	public void equip(Item item) {
-		if (item.attackValue() == 0 && item.defenseValue() == 0)
+		if (!inventory.contains(item)) {
+			if (inventory.isFull()) {
+				notify("Can't equip %s since you're holding too much stuff.", item.name());
+				return;
+			} else {
+				world.remove(item);
+				inventory.add(item);
+			}
+		}
+			
+		if (item.attackValue() == 0 && item.rangedAttackValue() == 0 && item.defenseValue() == 0)
 			return;
 		
 		if (item.attackValue() >= item.defenseValue()) {
