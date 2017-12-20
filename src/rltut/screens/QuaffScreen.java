@@ -3,22 +3,22 @@ package rltut.screens;
 import rltut.Creature;
 import rltut.Item;
 
-public class EatScreen extends InventoryBasedScreen {
-	
-	public EatScreen(Creature player) {
+public class QuaffScreen extends InventoryBasedScreen {
+
+	public QuaffScreen(Creature player) {
 		super(player);
 	}
 	
 	protected String getVerb() {
-		return "eat";
+		return "quaff";
 	}
 	
 	protected boolean isAcceptable(Item item) {
-		return item.foodValue() != 0;
+		return item.quaffEffect() != null;
 	}
 	
 	protected Screen use(Item item) {
-		player.eat(item);
+		player.quaff(item);
 		return null;
 	}
 }

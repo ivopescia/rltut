@@ -33,6 +33,10 @@ public class Item {
 	public int rangedAttackValue() { return rangedAttackValue; }
 	public void modfiyRangedAttackValue(int amount) { rangedAttackValue += amount; }
 	
+	private Effect quaffEffect;
+	public Effect quaffEffect() { return quaffEffect; }
+	public void setQuaffEffect(Effect effect) { this.quaffEffect = effect; }
+	
 	public Item(char glyph, Color color, String name) {
 		this.glyph = glyph;
 		this.color = color;

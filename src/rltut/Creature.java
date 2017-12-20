@@ -1,8 +1,8 @@
 package rltut;
 
 import java.awt.Color;
-
-import org.omg.CosNaming.IstringHelper;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Creature {
 	private World world;
@@ -30,6 +30,7 @@ public class Creature {
 	public String name() { return name; }
 	
 	private int attackValue;
+	public void modifyAttackValue(int value) { attackValue += value; }
 	public int attackValue() { 
 		return attackValue
 				+ (weapon == null ? 0 : weapon.attackValue())
@@ -37,6 +38,7 @@ public class Creature {
 		}
 	
 	public int defenseValue;
+	public void modifyDefenseValue(int value) { defenseValue += value; }
 	public int defenseValue() {
 		return defenseValue
 				+ (weapon == null ? 0 : weapon.defenseValue())
@@ -67,7 +69,13 @@ public class Creature {
 	private int level;
 	public int level() { return level; }
 	
+	private int regenHpCooldown;
+    private int regenHpPer1000;
+    public void modifyRegenHpPer1000(int amount) { regenHpPer1000 += amount; }
 	
+    private List<Effect> effects;
+    public List<Effect> effects(){ return effects; }
+    
 	public Creature (World world, char glyph, Color color, String name, int maxHp, int attack, int defense) {
 		this.world = world;
 		this.glyph = glyph;
@@ -82,6 +90,8 @@ public class Creature {
 		this.maxFood = 1000;
 		this.food = maxFood / 3 * 2;
 		this.level = 1;
+		this.regenHpPer1000 = 10;
+		this.effects = new ArrayList<Effect>();
 	}
 	
 	public void dig(int wx, int wy, int wz) {
@@ -119,25 +129,12 @@ public class Creature {
         if (other == null)
             ai.onEnter(x+mx, y+my, z+mz, tile);
         else
-            attack(other);
-	}
-	
-	public void attack(Creature other) {
-		modifyFood(-2);
-		int amount = Math.max(0,  attackValue() - other.defenseValue());
-		
-		amount = (int)(Math.random() * amount) + 1;
-
-		doAction(String.format("attack the %s for %d damage", other.name, amount));
-		
-		other.modifyHp(-amount);
-		
-		if (other.hp < 1)
-			gainXp(other);
+            meleeAttack(other);
 	}
 	
 	public void modifyHp(int amount) {
 		hp += amount;
+		
 		if (hp > maxHp) {
 			hp = maxHp;
 		} else if (hp < 1) {
@@ -149,7 +146,7 @@ public class Creature {
 
 	private void leaveCorpse() {
 		Item corpse = new Item('%', color, name + " corpse");
-		corpse.modifyFoodValue(maxHp);
+		corpse.modifyFoodValue((int)(maxHp * 1.1));
 		world.addAtEmptySpace(corpse,  x, y, z);
 		for (Item item : inventory.getItems()) {
 			if (item != null)
@@ -159,6 +156,8 @@ public class Creature {
 	
 	public void update() {
 		modifyFood(-1);
+		regenerateHealth();
+		updateEffects();
 		ai.onUpdate();
 	}
 	
@@ -262,13 +261,6 @@ public class Creature {
 		return glyph == '@';
 	}
 	
-	public void eat(Item item) {
-		if (item.foodValue() < 0)
-			notify("Gross!");
-	      
-		modifyFood(item.foodValue());
-		getRidOf(item);
-	}
 	
 	public void unequip(Item item) {
 		if (item == null)
@@ -389,9 +381,10 @@ public class Creature {
 		  putAt(item, wx, wy, wz);
 	  }
 	  
-	  public void throwAttack(Item item, Creature other) {
-		  commonAttack(other, attackValue / 2 + item.thrownAttackValue(), "throw a %s at the %s for %d damage", item.name(), other.name);
-	  }
+		private void throwAttack(Item item, Creature other) {
+			commonAttack(other, attackValue / 2 + item.thrownAttackValue(), "throw a %s at the %s for %d damage", item.name(), other.name);
+			other.addEffect(item.quaffEffect());
+		}
 	  
 	  public void rangedWeaponAttack(Creature other){
 		  commonAttack(other, attackValue / 2 + weapon.rangedAttackValue(), "fire a %s at the %s for %d damage", weapon.name(), other.name);
@@ -408,28 +401,79 @@ public class Creature {
 		  world.addAtEmptySpace(item, wx, wy, wz);
 	    }
 	    
-	    private void commonAttack(Creature other, int attack, String action, Object ... params) {
-	    	modifyFood(-2);
-
-	    	int amount = Math.max(0, attack - other.defenseValue());
-	        
-	    	amount = (int)(Math.random() * amount) + 1;
-	    
-	        Object[] params2 = new Object[params.length+1];
-	        for (int i = 0; i < params.length; i++){
-	         params2[i] = params[i];
-	        }
-	        params2[params2.length - 1] = amount;
-	    
-	        doAction(action, params2);
-	    
-	        other.modifyHp(-amount);
-	    
-	        if (other.hp < 1)
-	            gainXp(other);
-	    }
+	  private void commonAttack(Creature other, int attack, String action, Object ... params) {
+			modifyFood(-2);
+			
+			int amount = Math.max(0, attack - other.defenseValue());
+			
+			amount = (int)(Math.random() * amount) + 1;
+			
+			Object[] params2 = new Object[params.length+1];
+			for (int i = 0; i < params.length; i++){
+				params2[i] = params[i];
+			}
+			params2[params2.length - 1] = amount;
+			
+			doAction(action, params2);
+			
+			other.modifyHp(-amount);
+			
+			if (other.hp < 1)
+				gainXp(other);
+		}
 	    
 	    public void meleeAttack(Creature other){
 	        commonAttack(other, attackValue(), "attack the %s for %d damage", other.name);
 	    }
+	    
+	    private void regenerateHealth(){
+	        regenHpCooldown -= regenHpPer1000;
+	        if (regenHpCooldown < 0){
+	            modifyHp(1);
+	            modifyFood(-1);
+	            regenHpCooldown += 1000;
+	        }
+	    }
+	    
+	    public void quaff(Item item){
+            doAction("quaff a " + item.name());
+            consume(item);
+        }
+
+        public void eat(Item item){
+            doAction("eat a " + item.name());
+            consume(item);
+        }
+        
+        private void consume(Item item){
+            if (item.foodValue() < 0)
+                notify("Gross!");
+                
+            addEffect(item.quaffEffect());
+                
+            modifyFood(item.foodValue());
+            getRidOf(item);
+        }
+        
+        private void addEffect(Effect effect){
+            if (effect == null)
+                return;
+                
+            effect.start(this);
+            effects.add(effect);
+        }
+        
+        private void updateEffects(){
+            List<Effect> done = new ArrayList<Effect>();
+                
+            for (Effect effect : effects){
+                effect.update(this);
+                if (effect.isDone()) {
+                    effect.end(this);
+                    done.add(effect);
+                }
+            }
+                
+            effects.removeAll(done);
+        }
 }

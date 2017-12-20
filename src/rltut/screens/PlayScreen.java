@@ -77,6 +77,9 @@ public class PlayScreen implements Screen {
 			factory.randomArmor(z);
 			// create a baguette
 			factory.newEdibleWeapon(z);
+			// create random potions
+			factory.randomPotion(z);
+			factory.randomPotion(z);
 			
 		}
 		factory.newVictoryItem(world.depth() - 1);
@@ -100,7 +103,7 @@ public class PlayScreen implements Screen {
 		displayTiles(terminal, left, top);
 		displayMessages(terminal, messages);
 	
-		String stats = String.format(" %3d/%3d hp %3s xp %8s ", player.hp(), player.maxHp(), player.xp(), hunger());
+		String stats = String.format(" %3d/%3d hp %3s xp fl %s %8s", player.hp(), player.maxHp(), player.xp(), player.z+1, hunger());
 		terminal.write(stats, 1, 23);
 		
 		if (subscreen != null)
@@ -180,6 +183,7 @@ public class PlayScreen implements Screen {
 			case KeyEvent.VK_E: subscreen = new EatScreen(player); break;
 			case KeyEvent.VK_W: subscreen = new EquipScreen(player); break;
 			case KeyEvent.VK_X: subscreen = new ExamineScreen(player); break;
+			case KeyEvent.VK_Q: subscreen = new QuaffScreen(player); break;
 			case KeyEvent.VK_SEMICOLON: subscreen = new LookScreen(player, "Looking",
 					player.x - getScrollX(),
 					player.y - getScrollY()); break;
