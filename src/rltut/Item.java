@@ -1,6 +1,8 @@
 package rltut;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Item {
 	
@@ -37,11 +39,19 @@ public class Item {
 	public Effect quaffEffect() { return quaffEffect; }
 	public void setQuaffEffect(Effect effect) { this.quaffEffect = effect; }
 	
+	private List<Spell> writtenSpells;
+    public List<Spell> writtenSpells() { return writtenSpells; }
+
+    public void addWrittenSpell(String name, int manaCost, Effect effect){
+        writtenSpells.add(new Spell(name, manaCost, effect));
+    }
+	
 	public Item(char glyph, Color color, String name) {
 		this.glyph = glyph;
 		this.color = color;
 		this.name = name;
 		this.thrownAttackValue = 1;
+		this.writtenSpells = new ArrayList<Spell>();
 	}
 	
 	public String details() {

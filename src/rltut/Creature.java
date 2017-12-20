@@ -47,6 +47,7 @@ public class Creature {
 	
 	private int visionRadius;
 	public int visionRadius() { return visionRadius; }	
+	public void modifyVisionRadius(int value) { visionRadius += value; }
 	
 	private Inventory inventory;
 	public Inventory inventory() { return inventory; }
@@ -76,6 +77,17 @@ public class Creature {
     private List<Effect> effects;
     public List<Effect> effects(){ return effects; }
     
+    private int maxMana;
+    public int maxMana() { return maxMana; }
+    
+    private int mana;
+    public int mana() { return mana; }
+    public void modifyMana(int amount) { mana = Math.max(0,  Math.min(mana+amount,  maxMana)); }
+    
+    private int regenManaCooldown;
+    private int regenManaPer1000;
+    public void modifyRegenManaPer1000(int amount) { regenManaPer1000 += amount; }
+    
 	public Creature (World world, char glyph, Color color, String name, int maxHp, int attack, int defense) {
 		this.world = world;
 		this.glyph = glyph;
@@ -92,6 +104,7 @@ public class Creature {
 		this.level = 1;
 		this.regenHpPer1000 = 10;
 		this.effects = new ArrayList<Effect>();
+		this.regenManaPer1000 = 10;
 	}
 	
 	public void dig(int wx, int wy, int wz) {
@@ -203,9 +216,8 @@ public class Creature {
 	}
 	
 	public boolean canSee(int wx, int wy, int wz) {
-		return ai.canSee(wx, wy, wz);
+		return (detectCreatures > 0 && world.creature(wx,  wy,  wz) != null || ai.canSee(wx, wy, wz));
 	}
-	
 	
 	public Tile tile(int wx, int wy, int wz) {
 		if (canSee(wx, wy, wz))
@@ -475,5 +487,49 @@ public class Creature {
             }
                 
             effects.removeAll(done);
+        }
+        
+        private void regenerateMana() {
+        	regenManaCooldown -= regenManaPer1000;
+        	if (regenManaCooldown < 0) {
+        		if (mana < maxMana) {
+        			modifyMana(1);
+        			modifyFood(-1);
+        		}
+        		regenManaCooldown += 1000;
+        	}
+        }
+        
+        public void gainMaxMana() {
+        	maxMana+=5;
+        	mana+= 5;
+        	doAction("look more magical");
+        }
+        
+        public void gainRegenMana() {
+        	regenManaPer1000 += 5;
+        	doAction("look a little less tired");
+        }
+        
+        public void summon(Creature other) {
+            world.add(other);
+        }
+        
+        private int detectCreatures;
+        public void modifyDetectCreatures(int amount) { detectCreatures += amount; }
+        
+        public void castSpell(Spell spell, int x2, int y2) {
+            Creature other = creature(x2, y2, z);
+            
+            if (spell.manaCost() > mana){
+                doAction("point and mumble but nothing happens");
+                return;
+            } else if (other == null) {
+                doAction("point and mumble at nothing");
+                return;
+            }
+            
+            other.addEffect(spell.effect());
+            modifyMana(-spell.manaCost());
         }
 }
