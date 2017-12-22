@@ -9,7 +9,7 @@ public class LevelUpController {
 			new LevelUpOption("Increased hit points") {
 				public void invoke(Creature creature) {
 					creature.modifyMaxHp(10);
-					creature.modifyHp(10);
+					creature.modifyHp(10, "");
 					creature.doAction("look a lot healthier");
 				}
 			}, new LevelUpOption("Increased mana") {

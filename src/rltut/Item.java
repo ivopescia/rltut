@@ -42,16 +42,25 @@ public class Item {
 	private List<Spell> writtenSpells;
     public List<Spell> writtenSpells() { return writtenSpells; }
 
+    private String appearance;
+    public String appearance() { 
+    	if (appearance==null)
+    		return name;
+    	
+    	return appearance;
+    }
+    
     public void addWrittenSpell(String name, int manaCost, Effect effect){
         writtenSpells.add(new Spell(name, manaCost, effect));
     }
 	
-	public Item(char glyph, Color color, String name) {
+	public Item(char glyph, Color color, String name, String appearance) {
 		this.glyph = glyph;
 		this.color = color;
 		this.name = name;
 		this.thrownAttackValue = 1;
 		this.writtenSpells = new ArrayList<Spell>();
+		this.appearance = appearance;
 	}
 	
 	public String details() {

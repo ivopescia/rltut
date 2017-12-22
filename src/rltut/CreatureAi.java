@@ -1,13 +1,25 @@
 package rltut;
 
 import java.util.List;
+import java.util.Map;
 
 public class CreatureAi {
 	protected Creature creature;
 	
+	private Map<String, String> itemNames;
+	
 	public CreatureAi(Creature creature) {
 		this.creature = creature;
 		this.creature.setCreatureAi(this);
+	}
+	
+	public String getName(Item item) {
+		String name=itemNames.get(item.name());
+		return name == null ? item.appearance() : name;
+	}
+	
+	public void setName(Item item, String name) {
+		itemNames.put(item.name(), name);
 	}
 	
 	public void onEnter(int x, int y, int z, Tile tile) {
