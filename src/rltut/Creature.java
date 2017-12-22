@@ -22,9 +22,11 @@ public class Creature {
 	
 	private int maxHp;
 	public int maxHp() { return maxHp; }
+	public void modifyMaxHp(int value) { maxHp += value; }
 	
 	private int hp;
 	public int hp() { return hp; }
+	//public void modifyHp(int value) { hp += value; }
 	
 	private String name;
 	public String name() { return name; }
@@ -79,6 +81,7 @@ public class Creature {
     
     private int maxMana;
     public int maxMana() { return maxMana; }
+    public void modifyMaxMana(int amount) { maxMana += amount; }
     
     private int mana;
     public int mana() { return mana; }
@@ -104,7 +107,9 @@ public class Creature {
 		this.level = 1;
 		this.regenHpPer1000 = 10;
 		this.effects = new ArrayList<Effect>();
-		this.regenManaPer1000 = 10;
+		this.maxMana = 5;
+		this.mana = 5;
+		this.regenManaPer1000 = 20;
 	}
 	
 	public void dig(int wx, int wy, int wz) {
@@ -113,7 +118,7 @@ public class Creature {
 	    doAction("dig");
 	}
 	
-	public void moveBy(int mx, int my, int mz){
+	public void moveBy(int mx, int my, int mz) {
 		Tile tile = world.tile(x+mx, y+my, z+mz);
         
 		if (mx==0 && my==0 && mz==0)
@@ -145,6 +150,7 @@ public class Creature {
             meleeAttack(other);
 	}
 	
+	
 	public void modifyHp(int amount) {
 		hp += amount;
 		
@@ -156,6 +162,7 @@ public class Creature {
 			world.remove(this);
 		}
 	}
+	
 
 	private void leaveCorpse() {
 		Item corpse = new Item('%', color, name + " corpse");
@@ -325,16 +332,6 @@ public class Creature {
 		}
 	}
 	
-	public void gainXp(Creature other) {
-		int amount = other.maxHp
-				+ other.attackValue()
-				+ other.defenseValue()
-				- level;
-		
-		if (amount > 0)
-			modifyXp(amount);
-	}
-	
 	public void gainMaxHp() {
 	    maxHp += 10;
 	    hp += 10;
@@ -430,8 +427,15 @@ public class Creature {
 			
 			other.modifyHp(-amount);
 			
-			if (other.hp < 1)
-				gainXp(other);
+			if (other.hp < 1) {
+				int amount1 = other.maxHp
+						+ other.attackValue()
+						+ other.defenseValue()
+						- level;
+				
+				if (amount1 > 0)
+					modifyXp(amount1);
+			}
 		}
 	    
 	    public void meleeAttack(Creature other){

@@ -6,25 +6,44 @@ import java.util.List;
 public class LevelUpController {
 
 	private static LevelUpOption[] options = new LevelUpOption[] {
-		new LevelUpOption("Increased hit points") {
-			public void invoke(Creature creature) { creature.gainMaxHp(); }
-		},
-		new LevelUpOption("Increased attack value") {
-			public void invoke(Creature creature) { creature.gainAttackValue(); }
-		},
-		new LevelUpOption("Increased defense value") {
-			public void invoke(Creature creature) { creature.gainDefenseValue(); }
-		},
-		new LevelUpOption("Increased vision") {
-			public void invoke(Creature creature) { creature.gainVision(); }
-		},
-		new LevelUpOption("Increased mana") {
-            public void invoke(Creature creature) { creature.gainMaxMana(); }
-        },
-		new LevelUpOption("Increased mana regeneration") {
-            public void invoke(Creature creature) { creature.gainRegenMana(); }
-        }
-	};
+			new LevelUpOption("Increased hit points") {
+				public void invoke(Creature creature) {
+					creature.modifyMaxHp(10);
+					creature.modifyHp(10);
+					creature.doAction("look a lot healthier");
+				}
+			}, new LevelUpOption("Increased mana") {
+				public void invoke(Creature creature) {
+					creature.modifyMaxMana(5);
+					creature.modifyMana(5);
+					creature.doAction("look more magical");
+				}
+			}, new LevelUpOption("Increased attack value") {
+				public void invoke(Creature creature) {
+					creature.modifyAttackValue(2);
+					creature.doAction("look stronger");
+				}
+			}, new LevelUpOption("Increased defense value") {
+				public void invoke(Creature creature) {
+					creature.modifyDefenseValue(1);
+					creature.doAction("look a little tougher");
+				}
+			}, new LevelUpOption("Increased vision") {
+				public void invoke(Creature creature) {
+					creature.modifyVisionRadius(1);
+					creature.doAction("look a little more aware");
+				}
+			}, new LevelUpOption("Increased hp regeneration") {
+				public void invoke(Creature creature) {
+					creature.modifyRegenHpPer1000(10);
+					creature.doAction("look a little less bruised");
+				}
+			}, new LevelUpOption("Increased mana regeneration") {
+				public void invoke(Creature creature) {
+					creature.modifyRegenManaPer1000(10);
+					creature.doAction("look a little less tired");
+				}
+			} };
 	
 	public void autoLevelUp(Creature creature) {
 		options[(int)(Math.random() * options.length)].invoke(creature);
