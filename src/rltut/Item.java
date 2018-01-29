@@ -43,37 +43,38 @@ public class Item {
     public List<Spell> writtenSpells() { return writtenSpells; }
 
     private String appearance;
-    public String appearance() { 
-    	if (appearance==null)
-    		return name;
-    	
-    	return appearance;
-    }
+	public String appearance() { return appearance; }
     
     public void addWrittenSpell(String name, int manaCost, Effect effect){
         writtenSpells.add(new Spell(name, manaCost, effect));
     }
 	
-	public Item(char glyph, Color color, String name, String appearance) {
+	public Item(char glyph, Color color, String name, String appearance){
 		this.glyph = glyph;
 		this.color = color;
 		this.name = name;
+		this.appearance = appearance == null ? name : appearance;
 		this.thrownAttackValue = 1;
 		this.writtenSpells = new ArrayList<Spell>();
-		this.appearance = appearance;
 	}
 	
 	public String details() {
 		String details = "";
 		
 		if (attackValue != 0)
-			details += "    attack:" + attackValue;
+			details += "  attack:" + attackValue;
+
+		if (thrownAttackValue != 1)
+			details += "  thrown:" + thrownAttackValue;
+		
+		if (rangedAttackValue > 0)
+			details += "  ranged:" + rangedAttackValue;
 		
 		if (defenseValue != 0)
-			details += "    defense:" + defenseValue;
-		
+			details += "  defense:" + defenseValue;
+
 		if (foodValue != 0)
-			details += "    food:" + foodValue;
+			details += "  food:" + foodValue;
 		
 		return details;
 	}

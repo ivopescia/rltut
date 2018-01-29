@@ -67,10 +67,10 @@ public class StuffFactory {
 	
 	public Creature newGoblin(int depth, Creature player) {
 		Creature goblin = new Creature(world, 'g', AsciiPanel.brightGreen, "goblin", 42, 6, 2);
+		new GoblinAi(goblin, player);
 		goblin.equip(randomWeapon(depth));
 		goblin.equip(randomArmor(depth));
 		world.addAtEmptyLocation(goblin, depth);
-		new GoblinAi(goblin, player);
 		return goblin;
 	}
 	

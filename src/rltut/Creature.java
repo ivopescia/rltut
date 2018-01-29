@@ -204,23 +204,13 @@ public class Creature {
 	}
 	
 	public void doAction(String message, Object ... params){
-	    int r = 9;
-	    for (int ox = -r; ox < r+1; ox++){
-	        for (int oy = -r; oy < r+1; oy++){
-	            if (ox*ox + oy*oy > r*r)
-	                continue;
-	         
-	            Creature other = world.creature(x+ox, y+oy, z);
-	         
-	            if (other == null)
-	                continue;
-	         
-	            if (other == this)
-	                other.notify("You " + message + ".", params);
-	            else if (other.canSee(x, y, z))
-	                other.notify(String.format("The %s %s.", glyph, makeSecondPerson(message)), params);
-	         }
-	    }
+		for (Creature other : getCreaturesWhoSeeMe()){
+			if (other == this){
+				other.notify("You " + message + ".", params);
+			} else {
+				other.notify(String.format("The %s %s.", name, makeSecondPerson(message)), params);
+			}
+		}
 	}
 	
 	public void doAction(Item item, String message, Object ... params){

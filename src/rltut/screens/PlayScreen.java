@@ -3,7 +3,6 @@ package rltut.screens;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import asciiPanel.AsciiPanel;
@@ -37,51 +36,38 @@ public class PlayScreen implements Screen {
 	}
 	
 	private void createCreatures(StuffFactory factory){
-		// create Player
 		player = factory.newPlayer(messages, fov);
 		
 		for (int z = 0; z < world.depth(); z++){
-			// create 8 Fungus
-			for (int i = 0; i < 8; i++){
+			for (int i = 0; i < 4; i++){
 				factory.newFungus(z);
 			}
-			// create 20 Bats
-			for (int y = 0; y < 20; y++) {
+			for (int i = 0; i < 10; i++){
 				factory.newBat(z);
 			}
-			// create 3 zombies
-			for (int i = 0; i < z + 2; i++){
-		         factory.newZombie(z, player);
-		    }
-			// create goblins
-			for (int i = 0; i < 2; i++){
-		         factory.newGoblin(z, player);
-		    }
+			for (int i = 0; i < z * 2 + 1; i++){
+				factory.newZombie(z, player);
+				factory.newGoblin(z, player);
+			}
 		}
 	}
 	
 	private void createItems(StuffFactory factory) {
-		for (int z = 0; z < world.depth(); z++) {
-			for (int i = 0; i < world.width() * world.height() / 20; i++) {
+		for (int z = 0; z < world.depth(); z++){
+			for (int i = 0; i < world.width() * world.height() / 50; i++){
 				factory.newRock(z);
 			}
-			// create 2 apples
-			for (int y = 0; y < 2; y++) {
-				factory.newApple(z);
-			}
-			// create 1 bread
-			factory.newBread(z);
-			// create a weapon
-			factory.randomWeapon(z);
-			// create an armor
-			factory.randomArmor(z);
-			// create a baguette
+
 			factory.newEdibleWeapon(z);
+			factory.newBread(z);
+			factory.randomArmor(z);
+			factory.randomWeapon(z);
+			factory.randomWeapon(z);
+			
 			for (int i = 0; i < z + 1; i++){
 				factory.randomPotion(z);
 				factory.randomSpellBook(z);
 			}
-			
 		}
 		factory.newVictoryItem(world.depth() - 1);
 	}

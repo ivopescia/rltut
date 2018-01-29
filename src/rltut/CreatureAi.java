@@ -1,20 +1,22 @@
 package rltut;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CreatureAi {
 	protected Creature creature;
-	
 	private Map<String, String> itemNames;
 	
 	public CreatureAi(Creature creature) {
 		this.creature = creature;
 		this.creature.setCreatureAi(this);
+		this.itemNames = new HashMap<String, String>();
 	}
 	
 	public String getName(Item item) {
 		String name=itemNames.get(item.name());
+		
 		return name == null ? item.appearance() : name;
 	}
 	
